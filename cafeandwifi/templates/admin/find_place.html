@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+
+{% set heading = "Match " ~ cafe.name ~ " to a Google place" if cafe else "Add a Cafe" %}
+
+{% block admin_title %}{{ heading }}{% endblock %}
+
+{% block content %}
+<p class="step-label">STEP {{ 2 if searched else 1 }} OF 3</p>
+<h1>{{ heading }}</h1>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card"><div class="card-body">
+      <form method="get" action="{{ search_action }}" class="mb-4">
+        <label class="form-label" for="link">Paste a Google Maps link</label>
+        <input class="form-control" type="url" name="link" id="link" value="{{ link }}"
+               placeholder="https://maps.app.goo.gl/…">
+        <div class="form-text">Full links and short share links both work.</div>
+        <button type="submit" class="btn btn-primary mt-2">Find places</button>
+      </form>
+
+      <form method="get" action="{{ search_action }}">
+        <label class="form-label" for="q">Or search by name</label>
+        <input class="form-control" type="search" name="q" id="q" value="{{ query if not link else '' }}"
+               placeholder="Old Spike Roastery Peckham">
+        <button type="submit" class="btn btn-outline-secondary mt-2">Search</button>
+      </form>
+    </div></div>
+  </div>
+
+  <div class="col-lg-7">
+    {% if problem %}
+    <div class="alert alert-warning" role="alert">{{ problem }}</div>
+    {% endif %}
+
+    {% if choices %}
+    <p class="form-text">Pick the most specific place — the museum's cafe rather than the museum.</p>
+    <div class="place-candidates">
+      {% for candidate, choose_url in choices %}
+      <a class="card place-candidate" href="{{ choose_url }}">
+        <div class="card-body">
+          <strong>{{ candidate.name }}</strong>
+          <span>{{ candidate.address }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

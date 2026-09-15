@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}{% if shared_cafe %}{{ shared_cafe.name }} · Cafe &amp; Wifi{% else %}{{ super() }}{% endif %}{% endblock %}
+
+{% block meta %}
+  <meta name="description" content="{{ preview.description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Cafe &amp; Wifi">
+  <meta property="og:title" content="{{ preview.title }}">
+  <meta property="og:description" content="{{ preview.description }}">
+  <meta property="og:url" content="{{ preview.url }}">
+  <meta property="og:image" content="{{ preview.image }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+
+{% block body %}
+<div class="map-page"
+     data-cafes-url="{{ url_for('public.cafe_list') }}"
+     {% if shared_cafe %}data-shared-cafe="{{ shared_cafe | tojson | forceescape }}"{% endif %}>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-name">Cafe &amp; Wifi</span>
+      <span class="brand-city">London</span>
+    </div>
+    <a class="curator-link d-none d-lg-inline" href="/admin">Curator sign in</a>
+    <button type="button" class="btn btn-primary btn-sm filters-toggle d-lg-none"
+            data-bs-toggle="offcanvas" data-bs-target="#filters" aria-controls="filters">
+      <i data-lucide="sliders-horizontal"></i>
+      <span>Filters<span data-active-filter-count></span></span>
+    </button>
+  </header>
+
+  <div class="map-body">
+    <aside class="offcanvas-lg offcanvas-bottom filter-panel" id="filters"
+           tabindex="-1" aria-labelledby="filters-title">
+      <div class="sheet-handle d-lg-none" aria-hidden="true"></div>
+      <div class="offcanvas-body">
+        <form class="filters" id="filter-form">
+          <div class="filters-head">
+            <h2 class="filters-title" id="filters-title">Filters</h2>
+            <div class="match-count" data-match-count aria-live="polite"></div>
+          </div>
+
+          <div class="filter-switches">
+            {% for name, icon, label in [
+              ("wifi", "wifi", "Has Wi-Fi"),
+              ("sockets", "plug", "Has sockets"),
+              ("toilet", "droplet", "Has a toilet"),
+              ("calls", "phone", "Calls permitted"),
+            ] %}
+            <div class="form-check form-switch filter-switch">
+              <input class="form-check-input" type="checkbox" role="switch"
+                     name="{{ name }}" value="1" id="filter-{{ name }}">
+              <label class="form-check-label" for="filter-{{ name }}">
+                <i data-lucide="{{ icon }}"></i> {{ label }}
+              </label>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="filters-divider"></div>
+
+          <fieldset class="filter-group">
+            <legend class="form-label">Minimum seating</legend>
+            <div class="band-row">
+              <input type="radio" class="btn-check" name="min_seating" id="seating-any" value="" checked>
+              <label class="btn btn-outline-secondary btn-sm" for="seating-any">Any</label>
+              {% for value, label in seating_bands %}
+              <input type="radio" class="btn-check" name="min_seating" id="seating-{{ loop.index }}" value="{{ value }}">
+              <label class="btn btn-outline-secondary btn-sm" for="seating-{{ loop.index }}">{{ label }}</label>
+              {% endfor %}
+            </div>
+          </fieldset>
+
+          <div class="filter-group">
+            <div class="price-head">
+              <label class="form-label" for="max-price">Max coffee price</label>
+              <output class="price-value" for="max-price" data-price-value>Any</output>
+            </div>
+            <input class="form-range" type="range" name="max_price_pence" id="max-price"
+                   min="{{ price_slider.min }}" max="{{ price_slider.max }}"
+                   step="{{ price_slider.step }}" value="{{ price_slider.max }}">
+          </div>
+
+          <button type="button" class="btn btn-link clear-link d-none d-lg-inline-block" data-clear-filters>
+            Clear all filters
+          </button>
+
+          <div class="sheet-actions d-lg-none">
+            <button type="button" class="btn btn-outline-secondary" data-clear-filters>Clear</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="offcanvas" data-bs-target="#filters">
+              Show cafes
+            </button>
+          </div>
+        </form>
+      </div>
+    </aside>
+
+    <main class="map-inset">
+      <div id="map" class="map-surface" aria-label="Map of London cafes"></div>
+
+      {% if shared_cafe %}
+      <div class="shared-strip" data-shared-strip role="status">
+        <i data-lucide="send"></i>
+        <span>Shared with you · one cafe shown</span>
+        <a href="{{ url_for('public.map_page') }}" data-see-all>See all London cafes</a>
+      </div>
+      {% endif %}
+
+      {% if missing %}
+      <div class="map-panel map-notice" data-missing-note role="status">
+        <i data-lucide="coffee"></i>
+        <div>
+          <strong>This cafe is no longer listed</strong>
+          <span>It may have closed for good. Here are the London cafes that are listed now.</span>
+        </div>
+        <button type="button" class="btn-close" aria-label="Dismiss" data-dismiss-note></button>
+      </div>
+      {% endif %}
+
+      <div class="map-panel no-match d-none" data-no-match role="status">
+        <i data-lucide="search-x"></i>
+        <h2>No cafes match these filters</h2>
+        <p>Try a higher coffee price or a smaller minimum seating — those usually rule out the most.</p>
+        <button type="button" class="btn btn-primary" data-clear-filters>Clear filters</button>
+      </div>
+      {% if not maps_key %}
+      <div class="map-panel map-notice" role="status">
+        <i data-lucide="map-pin-off"></i>
+        <div>
+          <strong>The map needs a Google Maps key</strong>
+          <span>Set <code>GOOGLE_MAPS_BROWSER_KEY</code> in <code>.env</code> and restart the site.</span>
+        </div>
+      </div>
+      {% endif %}
+    </main>
+  </div>
+
+  <aside class="offcanvas offcanvas-bottom cafe-sheet" id="cafe-sheet" tabindex="-1"
+         data-bs-backdrop="false" data-bs-scroll="true" aria-label="Cafe card">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div class="offcanvas-body" data-cafe-sheet-body></div>
+  </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+{% if maps_key %}
+<script async
+        src="https://maps.googleapis.com/maps/api/js?key={{ maps_key | urlencode }}&loading=async&callback=initCafeMap"></script>
+{% endif %}
+{% endblock %}

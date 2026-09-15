@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+
+{% block admin_title %}Sign in{% endblock %}
+
+{% block content %}
+<div class="card sign-in-card">
+  <div class="card-body">
+    <h1 class="h3">Curator sign in</h1>
+    {% if failed %}
+    <div class="alert alert-warning" role="alert">That password is not right.</div>
+    {% endif %}
+    <form method="post" action="{{ url_for('admin.sign_in') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label class="form-label" for="password">Password</label>
+      <input class="form-control" type="password" name="password" id="password"
+             autocomplete="current-password" required autofocus>
+      <button type="submit" class="btn btn-primary w-100 mt-3">Sign in</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,214 @@
+/* Organic × Bootstrap 5.3 theme sheet
+   Load order: bootstrap.min.css → organic.css (design system) → this file.
+   Stock Bootstrap components, retokenised onto the Organic palette. No component
+   markup changes are required beyond the class recipes at the bottom. */
+
+:root,
+[data-bs-theme="light"] {
+  /* Display face: EB Garamond — old-style garalde serif, set at 500 */
+  --font-display: 'EB Garamond', Georgia, serif;
+  /* ── Palette → Bootstrap roles ───────────────────────────────── */
+  --bs-body-bg: var(--color-bg);                 /* #f5ead8 */
+  --bs-body-color: var(--color-text);            /* #201e1d */
+  --bs-secondary-color: var(--color-neutral-700);
+  --bs-tertiary-color: var(--color-neutral-600);
+  --bs-emphasis-color: var(--color-neutral-900);
+
+  --bs-primary: var(--color-accent);              /* #c67139 terracotta */
+  --bs-primary-rgb: 198, 113, 57;
+  --bs-secondary: var(--color-accent-2);          /* #7a8a5e sage */
+  --bs-secondary-rgb: 122, 138, 94;
+  --bs-success: var(--color-accent-2-600);
+  --bs-danger: #a8412a;
+  --bs-warning: var(--color-accent-500);
+  --bs-light: var(--color-neutral-100);
+  --bs-dark: var(--color-neutral-900);
+
+  --bs-border-color: var(--color-divider);
+  --bs-border-radius: var(--radius-md);           /* 16px */
+  --bs-border-radius-sm: var(--radius-sm);        /* 8px */
+  --bs-border-radius-lg: var(--radius-lg);        /* 28px */
+  --bs-border-radius-xl: var(--radius-lg);
+  --bs-border-radius-pill: 999px;
+
+  --bs-link-color: var(--color-accent-700);       /* 4.5:1 on cream */
+  --bs-link-color-rgb: 140, 73, 26;
+  --bs-link-hover-color: var(--color-accent-800);
+
+  /* ── Type ────────────────────────────────────────────────────── */
+  --bs-body-font-family: var(--font-body);        /* Figtree */
+  --bs-body-font-size: 1rem;
+  --bs-body-line-height: 1.55;
+  --bs-headings-font-family: var(--font-display);
+
+  --bs-box-shadow-sm: var(--shadow-sm);
+  --bs-box-shadow: var(--shadow-md);
+  --bs-box-shadow-lg: var(--shadow-lg);
+  --bs-focus-ring-color: var(--color-accent);
+  --bs-focus-ring-width: 2px;
+  --bs-focus-ring-opacity: 1;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  line-height: 1.14;
+}
+
+/* ── Buttons: pills, heading face, ramp-driven states ──────────── */
+.btn {
+  /* organic.css flattens .btn to transparent; hand the variants back to Bootstrap's vars */
+  background: var(--bs-btn-bg, transparent);
+  border-color: var(--bs-btn-border-color, transparent);
+  color: var(--bs-btn-color, var(--color-text));
+  /* organic.css also sets these directly (Caprasimo 400), which beats Bootstrap's vars */
+  font-family: var(--bs-btn-font-family);
+  font-weight: var(--bs-btn-font-weight);
+  --bs-btn-border-radius: 999px;
+  --bs-btn-font-family: var(--font-display);
+  --bs-btn-font-weight: 600;
+  --bs-btn-padding-x: 1.15rem;
+  --bs-btn-padding-y: 0.5rem;
+}
+.btn-primary {
+  --bs-btn-bg: var(--color-accent);
+  --bs-btn-border-color: var(--color-accent);
+  --bs-btn-color: var(--color-bg);
+  --bs-btn-hover-bg: var(--color-accent-600);
+  --bs-btn-hover-border-color: var(--color-accent-600);
+  --bs-btn-hover-color: var(--color-bg);
+  --bs-btn-active-bg: var(--color-accent-700);
+  --bs-btn-active-border-color: var(--color-accent-700);
+  --bs-btn-disabled-bg: var(--color-accent);
+  --bs-btn-disabled-border-color: var(--color-accent);
+}
+.btn-outline-secondary {
+  --bs-btn-color: var(--color-neutral-800);
+  --bs-btn-border-color: var(--color-neutral-300);
+  --bs-btn-hover-bg: var(--color-neutral-200);
+  --bs-btn-hover-border-color: var(--color-neutral-400);
+  --bs-btn-hover-color: var(--color-neutral-900);
+  --bs-btn-active-bg: var(--color-neutral-300);
+  --bs-btn-active-color: var(--color-neutral-900);
+}
+.btn-link { --bs-btn-color: var(--color-accent-700); text-decoration: none; }
+.btn-danger {
+  --bs-btn-bg: #a8412a; --bs-btn-border-color: #a8412a;
+  --bs-btn-hover-bg: #8c3522; --bs-btn-hover-border-color: #8c3522;
+}
+
+/* ── Cards & surfaces ──────────────────────────────────────────── */
+.card {
+  --bs-card-bg: var(--color-neutral-100);
+  --bs-card-border-color: transparent;
+  --bs-card-border-radius: var(--radius-lg);
+  --bs-card-inner-border-radius: var(--radius-md);
+  --bs-card-spacer-x: 1.25rem;
+  --bs-card-spacer-y: 1.25rem;
+  box-shadow: var(--shadow-md);
+}
+.card-img-top { border-radius: var(--radius-md) var(--radius-md) 0 0; }
+
+/* ── Forms: pill inputs, accent focus ──────────────────────────── */
+.form-control, .form-select {
+  background: var(--color-neutral-100);
+  border-color: var(--color-neutral-300);
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  color: var(--color-text);
+}
+textarea.form-control { border-radius: var(--radius-md); }
+.form-control:focus, .form-select:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+.form-control::placeholder { color: var(--color-neutral-500); }
+.form-label { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.3rem; }
+.form-text { color: var(--color-neutral-700); font-size: 0.8125rem; }
+.form-check-input {
+  border-color: var(--color-neutral-400);
+  background-color: var(--color-neutral-100);
+}
+.form-check-input:checked {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+.form-check-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+.form-switch .form-check-input { width: 2.25rem; height: 1.25rem; }
+/* Bootstrap turns the unchecked thumb blue on focus; an SVG data URI can't read
+   tokens, so this is --color-accent-500 written out. */
+.form-switch .form-check-input:focus:not(:checked) {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23d67f48'/%3e%3c/svg%3e");
+}
+.form-range::-webkit-slider-thumb { background: var(--color-accent); }
+.form-range::-moz-range-thumb { background: var(--color-accent); }
+.form-range::-webkit-slider-runnable-track { background: var(--color-neutral-300); height: 6px; }
+
+/* Segmented filter: .btn-check + .btn-outline-secondary in a .btn-group */
+.btn-group > .btn { border-radius: 999px !important; }
+.btn-group > .btn + .btn { margin-left: 0.35rem; }
+.btn-check:checked + .btn-outline-secondary {
+  background: var(--color-accent-200);
+  border-color: var(--color-accent-400);
+  color: var(--color-accent-800);
+}
+
+/* ── Badges / tags ─────────────────────────────────────────────── */
+.badge { border-radius: 999px; font-weight: 600; padding: 0.35em 0.75em; }
+.text-bg-primary { background: var(--color-accent-200) !important; color: var(--color-accent-800) !important; }
+.text-bg-secondary { background: var(--color-accent-2-200) !important; color: var(--color-accent-2-800) !important; }
+.text-bg-light { background: var(--color-neutral-200) !important; color: var(--color-neutral-800) !important; }
+
+/* ── Navbar, offcanvas, modal, table ───────────────────────────── */
+.navbar { --bs-navbar-color: var(--color-neutral-800); background: var(--color-bg); }
+.navbar-brand { font-family: var(--font-heading); font-size: 1.35rem; }
+.offcanvas, .modal-content {
+  background: var(--color-neutral-100);
+  border: 0;
+  border-radius: var(--radius-lg);
+}
+.offcanvas-bottom { border-radius: var(--radius-lg) var(--radius-lg) 0 0; height: auto; }
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--color-text);
+  --bs-table-border-color: var(--color-divider);
+  --bs-table-hover-bg: var(--color-neutral-200);
+}
+.table > thead th {
+  font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--color-neutral-700); font-weight: 700; border-bottom-width: 1px;
+}
+.alert { border: 0; border-radius: var(--radius-md); }
+.alert-warning { background: var(--color-accent-200); color: var(--color-accent-800); }
+.alert-secondary { background: var(--color-neutral-200); color: var(--color-neutral-800); }
+
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+/* ── Class recipes (project classes, ~12 rules total) ──────────── */
+/* Attribute icon row on a cafe card */
+.attr-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.attr {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-width: 56px; padding: 0.5rem 0.25rem;
+  background: var(--color-neutral-200); border-radius: var(--radius-md);
+  font-size: 0.6875rem; color: var(--color-neutral-700);
+}
+.attr strong { font-size: 0.8125rem; color: var(--color-neutral-900); font-weight: 700; }
+.attr-on { background: var(--color-accent-2-200); color: var(--color-accent-2-800); }
+.attr-off { background: var(--color-neutral-200); color: var(--color-neutral-600); opacity: 0.7; }
+/* Map surface — the plate sits under every overlay */
+.map-surface { position: absolute; inset: 0; }
+/* .offcanvas and .modal are left out: they must stay position: fixed to open */
+.card, .map-panel { position: relative; z-index: 2; }
+.map-panel {  /* floating filter rail / count pill over the map */
+  background: color-mix(in srgb, var(--color-neutral-100) 94%, transparent);
+  backdrop-filter: blur(6px);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+/* Photo treatment — every cafe photo goes through this */
+.washed { filter: saturate(0.6) contrast(0.85) brightness(1.1) opacity(0.94); }
