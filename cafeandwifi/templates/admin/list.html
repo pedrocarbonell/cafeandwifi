@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+
+{% block admin_title %}Cafes{% endblock %}
+
+{% block content %}
+<div class="admin-list-head">
+  <div>
+    <h1>{{ cafes | length }} Cafe{{ "" if cafes | length == 1 else "s" }}</h1>
+    <p class="admin-subline">{{ unpositioned }} need a position · {{ unmatched }} need a Google place</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('admin.new_cafe') }}"><i data-lucide="plus"></i> Add a Cafe</a>
+</div>
+
+<div class="card">
+  <table class="table table-hover admin-table mb-0">
+    <thead>
+      <tr><th>Cafe</th><th>Neighbourhood</th><th>Needs</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for cafe in cafes %}
+      <tr data-cafe="{{ cafe.name }}">
+        <td><a href="{{ url_for('admin.edit_cafe', cafe_id=cafe.id) }}">{{ cafe.name }}</a></td>
+        <td>{{ cafe.neighbourhood }}</td>
+        <td>
+          {% if not cafe.positioned %}<span class="badge badge-no-position">no position</span>{% endif %}
+          {% if not cafe.google_place_id %}<span class="badge badge-no-place">no Google place</span>{% endif %}
+        </td>
+        <td class="text-end"><a href="{{ url_for('admin.edit_cafe', cafe_id=cafe.id) }}">Edit</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4">No Cafes yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

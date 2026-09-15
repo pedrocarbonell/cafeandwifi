@@ -6,6 +6,7 @@ docs/
 # Secrets and local settings
 .env
 .env.*
+!.env.example
 
 # Python
 __pycache__/

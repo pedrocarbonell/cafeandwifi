@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}
+
+{% block admin_title %}Delete {{ cafe.name }}{% endblock %}
+
+{% block content %}
+<div class="card delete-card">
+  <div class="card-body">
+    <h1 class="h3">Delete {{ cafe.name }}?</h1>
+    <p>Only delete a Cafe that has closed for good. It disappears from the map and its share link stops working.
+       A Cafe that is closed for a while should stay listed.</p>
+    <form method="post" action="{{ url_for('admin.delete_cafe', cafe_id=cafe.id) }}" class="d-flex gap-2">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn btn-danger">Delete Cafe</button>
+      <a class="btn btn-outline-secondary" href="{{ url_for('admin.edit_cafe', cafe_id=cafe.id) }}">Keep it</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}{% block admin_title %}Curator{% endblock %} · Cafe &amp; Wifi{% endblock %}
+
+{% block body %}
+<div class="admin-page">
+  <header class="admin-header">
+    <a class="brand" href="{{ url_for('admin.cafe_list') }}">
+      <span class="brand-name">Cafe &amp; Wifi</span>
+      <span class="brand-city">Curator</span>
+    </a>
+    {% if session.get("curator") %}
+    <nav class="admin-nav">
+      <a href="{{ url_for('public.map_page') }}">View map</a>
+      <form method="post" action="{{ url_for('admin.sign_out') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-link">Sign out</button>
+      </form>
+    </nav>
+    {% endif %}
+  </header>
+  <main class="admin-main">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

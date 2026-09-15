@@ -1,0 +1,142 @@
+{% extends "admin/base.html" %}
+
+{% block admin_title %}{{ cafe.name if cafe else "Add a Cafe" }}{% endblock %}
+
+{% block content %}
+<h1>{{ cafe.name if cafe else "Add a Cafe" }}</h1>
+
+{% if error %}
+<div class="alert alert-warning" role="alert" data-error-field="{{ error.field }}">{{ error.message }}</div>
+{% endif %}
+
+<form method="post" action="{{ url_for('admin.update_cafe', cafe_id=cafe.id) if cafe else url_for('admin.create_cafe') }}"
+      class="cafe-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="google_place_id" value="{{ values.google_place_id or '' }}">
+  <input type="hidden" name="google_name" value="{{ values.google_name or '' }}">
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card"><div class="card-body">
+        <h2 class="h5">Position</h2>
+        {% if maps_key %}
+        <div id="pin-map" class="pin-map" aria-label="Map to confirm the Cafe's pin"></div>
+        <p class="form-text">Drag the pin onto the Cafe if it is not quite right, or click the map to place it.</p>
+        {% else %}
+        <p class="form-text">Set <code>GOOGLE_MAPS_BROWSER_KEY</code> to confirm the pin on a map. Until then, type the coordinates.</p>
+        {% endif %}
+        <div class="row g-2">
+          <div class="col">
+            <label class="form-label" for="latitude">Latitude</label>
+            <input class="form-control form-control-sm" name="latitude" id="latitude" inputmode="decimal"
+                   value="{{ values.latitude or '' }}">
+          </div>
+          <div class="col">
+            <label class="form-label" for="longitude">Longitude</label>
+            <input class="form-control form-control-sm" name="longitude" id="longitude" inputmode="decimal"
+                   value="{{ values.longitude or '' }}">
+          </div>
+        </div>
+        {% if google_pin %}
+        <p class="form-text mt-2 mb-0" data-google-pin="{{ google_pin | join(',') }}">
+          The new Google place's pin is at {{ google_pin | join(', ') }}.
+          <button type="button" class="btn btn-link btn-sm p-0 align-baseline" data-use-google-pin>Use Google's pin</button>
+        </p>
+        {% endif %}
+      </div></div>
+    </div>
+
+    <div class="col-lg-7">
+      {% for other in sharing_place %}
+      {% if loop.first %}
+      <div class="alert alert-warning" role="alert">
+        This Google place is already matched to
+      {% endif %}
+        <a href="{{ url_for('admin.edit_cafe', cafe_id=other.id) }}">{{ other.name }}</a>{{ "," if not loop.last else "." }}
+      {% if loop.last %}
+        Save anyway if this is a different Cafe in the same building.
+      </div>
+      {% endif %}
+      {% endfor %}
+
+      <div class="mb-3">
+        <label class="form-label" for="name">Cafe name</label>
+        <input class="form-control" name="name" id="name" required value="{{ values.name or '' }}">
+        {% if google_name %}
+        <div class="form-text google-name" data-google-name="{{ google_name }}">
+          Google calls this place <strong>{{ google_name }}</strong><span class="names-differ{{ '' if names_differ else ' d-none' }}"
+            >{% if names_differ %} — names differ — same business?{% endif %}</span>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="neighbourhood">Neighbourhood</label>
+        <input class="form-control" name="neighbourhood" id="neighbourhood" list="neighbourhoods" required
+               value="{{ values.neighbourhood or '' }}" autocomplete="off">
+        <datalist id="neighbourhoods">
+          {% for neighbourhood in neighbourhoods %}
+          <option value="{{ neighbourhood }}">
+          {% endfor %}
+        </datalist>
+      </div>
+
+      {% for field, (label, rule) in attribute_rules.items() %}
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" name="{{ field }}" id="{{ field }}" value="1"
+               {% if values.get(field) == "1" %}checked{% endif %}>
+        <label class="form-check-label" for="{{ field }}">{{ label }}</label>
+        <div class="form-text">{{ rule }}</div>
+      </div>
+      {% endfor %}
+
+      <fieldset class="mb-3">
+        <legend class="form-label">Seating capacity</legend>
+        <div class="band-row">
+          {% for band in seating_bands %}
+          <input type="radio" class="btn-check" name="seating_capacity" id="band-{{ loop.index }}" value="{{ band }}"
+                 {% if values.seating_capacity == band %}checked{% endif %} required>
+          <label class="btn btn-outline-secondary btn-sm" for="band-{{ loop.index }}">{{ band }}</label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <div class="mb-3">
+        <label class="form-label" for="coffee_price">Coffee price (£)</label>
+        <input class="form-control" name="coffee_price" id="coffee_price" inputmode="decimal" required
+               placeholder="2.80" value="{{ values.coffee_price or '' }}">
+        <div class="form-text">The typical price of a black coffee.</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Save Cafe</button>
+    </div>
+  </div>
+</form>
+
+{% if cafe %}
+<div class="row g-4 mt-2">
+  <div class="col-lg-5">
+    <div class="card"><div class="card-body">
+      <h2 class="h5">Google place</h2>
+      <p class="form-text">Matched to the wrong business, or not matched yet?</p>
+      <a class="btn btn-outline-secondary" href="{{ url_for('admin.rematch_cafe', cafe_id=cafe.id) }}">Redo place match</a>
+    </div></div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card"><div class="card-body">
+      <h2 class="h5">Closed for good?</h2>
+      <p class="form-text">Delete it so it disappears from the map. Leave a Cafe that is only closed for a while.</p>
+      <a class="btn btn-outline-danger" href="{{ url_for('admin.delete_cafe', cafe_id=cafe.id) }}">Delete…</a>
+    </div></div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% if maps_key %}
+<script async
+        src="https://maps.googleapis.com/maps/api/js?key={{ maps_key | urlencode }}&loading=async&callback=initPinMap"></script>
+{% endif %}
+{% endblock %}
